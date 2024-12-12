@@ -2,21 +2,27 @@ import {Component} from 'react'
 import Cookies from 'js-cookie'
 import {Redirect} from 'react-router-dom'
 
-class LoginForm extends Component {
+class Login extends Component {
   state = {
     username: '',
     password: '',
+    showPassword: false,
     showSubmitError: false,
     errorMsg: '',
-    isBool: false,
+  }
+
+  onChangePassword = event => {
+    this.setState({password: event.target.value})
   }
 
   onChangeUsername = event => {
     this.setState({username: event.target.value})
   }
 
-  onChangePassword = event => {
-    this.setState({password: event.target.value})
+  onChangeCheckbox = () => {
+    this.setState(prevState => ({
+      showPassword: !prevState.showPassword,
+    }))
   }
 
   onSubmitSuccess = jwtToken => {
@@ -24,17 +30,15 @@ class LoginForm extends Component {
 
     Cookies.set('jwt_token', jwtToken, {
       expires: 30,
-      path: '/',
     })
     history.replace('/')
   }
 
   onSubmitFailure = errorMsg => {
-    console.log(errorMsg)
     this.setState({showSubmitError: true, errorMsg})
   }
 
-  submitForm = async event => {
+  onSubmit = async event => {
     event.preventDefault()
     const {username, password} = this.state
     const userDetails = {username, password}
@@ -44,7 +48,9 @@ class LoginForm extends Component {
       body: JSON.stringify(userDetails),
     }
     const response = await fetch(url, options)
+    console.log(response)
     const data = await response.json()
+    console.log(data)
     if (response.ok === true) {
       this.onSubmitSuccess(data.jwt_token)
     } else {
@@ -52,29 +58,21 @@ class LoginForm extends Component {
     }
   }
 
-  onChangePasswordValue = () => {
-    this.setState(prevState => ({isBool: !prevState.isBool}))
-  }
-
   renderPasswordField = () => {
-    const {password, isBool} = this.state
+    const {password, showPassword} = this.state
+
     return (
       <>
         <label className="input-label" htmlFor="password">
           PASSWORD
         </label>
         <input
-          type={isBool ? 'text' : 'password'}
+          type={showPassword ? 'text' : 'password'}
           id="password"
           className="password-input-field"
           value={password}
           onChange={this.onChangePassword}
-        />
-        <label htmlFor="checkBox">Show Password</label>
-        <input
-          type="checkbox"
-          id="checkBox"
-          onClick={this.onChangePasswordValue}
+          placeholder="Password"
         />
       </>
     )
@@ -82,6 +80,7 @@ class LoginForm extends Component {
 
   renderUsernameField = () => {
     const {username} = this.state
+
     return (
       <>
         <label className="input-label" htmlFor="username">
@@ -93,6 +92,7 @@ class LoginForm extends Component {
           className="username-input-field"
           value={username}
           onChange={this.onChangeUsername}
+          placeholder="Username"
         />
       </>
     )
@@ -101,27 +101,36 @@ class LoginForm extends Component {
   render() {
     const {showSubmitError, errorMsg} = this.state
     const jwtToken = Cookies.get('jwt_token')
+
     if (jwtToken !== undefined) {
       return <Redirect to="/" />
     }
     return (
-      <div className="login-form-container">
-        <form className="form-container" onSubmit={this.submitForm}>
+      <div className="bg-container">
+        <form className="form-container" onSubmit={this.onSubmit}>
           <img
-            src="https://assets.ccbp.in/frontend/react-js/nxt-trendz-logo-img.png"
-            className="login-website-logo-desktop-image"
+            src="https://res.cloudinary.com/dzaz9bsnw/image/upload/v1704821765/Group_8005_vgjmvh.jpg"
+            className="login-website-logo"
             alt="login website logo"
           />
           <div className="input-container">{this.renderUsernameField()}</div>
           <div className="input-container">{this.renderPasswordField()}</div>
+          <div className="checkbox-card">
+            <input
+              id="checkboxInput"
+              type="checkbox"
+              onChange={this.onChangeCheckbox}
+            />
+            <label htmlFor="checkboxInput">Show Password</label>
+          </div>
           <button type="submit" className="login-button">
             Login
           </button>
-          {showSubmitError && <p className="error-message">*{errorMsg}</p>}
+          {showSubmitError && <p>*{errorMsg}</p>}
         </form>
       </div>
     )
   }
 }
 
-export default LoginForm
+export default Login

@@ -1,48 +1,62 @@
-import Cookies from 'js-cookie'
 import {Link} from 'react-router-dom'
-
 import Header from '../Header'
+import './index.css'
 
-const Result = props => {
-  const {isBool} = props
+const Results = props => {
+  const {location} = props
+  const {state} = location
+  const {score, formattedTimer, timeUp} = state
+
   return (
     <>
       <Header />
-      <div>
-        <h1>Congrats! You completed the assessment</h1>
-        <p>Time Taken</p>
-        <p>Your score: 2</p>
-        <Link to="/assessment">
-          <button>Reattempt</button>
-        </Link>
-      </div>
-      <div>
-        <img
-          className="website-logo"
-          src="https://assets.ccbp.in/frontend/react-js/nxt-trendz-logo-img.png"
-          alt="submit"
-        />
-      </div>
-      {isBool && (
-        <>
-          <div>
-            <p>You did not complete the assessment within the time</p>
-            <p>Your score: 2</p>
+      <div className="bg-container">
+        {timeUp ? (
+          <div className="result-container">
+            <img
+              src="https://res.cloudinary.com/dzaz9bsnw/image/upload/v1705260308/calender_1_1_fttxjx.jpg"
+              alt="time up"
+              className="result-image"
+            />
+            <h1 className="congrats-head">Time is up!</h1>
+            <p className="about-time">
+              You did not complete the assessment within the time
+            </p>
+            <p className="about-time">Time Taken:</p>
+            <p className="about-time">{formattedTimer}</p>
+            <p className="about-score">Your score:</p>
+            <p className="about-score">{score}</p>
             <Link to="/assessment">
-              <button>Reattempt</button>
+              <button type="button" className="re-btn">
+                Reattempt
+              </button>
             </Link>
           </div>
-          <div>
+        ) : (
+          <div className="result-container">
             <img
-              className="website-logo"
-              src="https://assets.ccbp.in/frontend/react-js/nxt-trendz-logo-img.png"
-              alt="time up"
+              src="https://res.cloudinary.com/dzaz9bsnw/image/upload/v1704821915/Layer_2_prwvp6.jpg"
+              alt="submit"
+              className="result-image"
             />
+            <h1 className="congrats-head">
+              Congrats! You completed the assessment.
+            </h1>
+
+            <p className="about-time">Time Taken:</p>
+            <p className="about-time">{formattedTimer}</p>
+            <p className="about-score">Your score:</p>
+            <p className="about-score">{score}</p>
+            <Link to="/assessment">
+              <button type="button" className="re-btn">
+                Reattempt
+              </button>
+            </Link>
           </div>
-        </>
-      )}
+        )}
+      </div>
     </>
   )
 }
 
-export default Result
+export default Results
